@@ -1,0 +1,25 @@
+{
+  "name": "talwinder-css",
+  "version": "1.0.0",
+  "description": "A lightweight Tailwind-like utility engine and component library written in vanilla JavaScript.",
+  "main": "index.js",
+  "type": "module",
+  "exports": {
+    ".": "./index.js"
+  },
+  "keywords": [
+    "css",
+    "tailwind",
+    "utility-first",
+    "javascript",
+    "web-components",
+    "lightweight"
+  ],
+  "author": "Talwinder",
+  "license": "MIT",
+  "files": [
+    "index.js",
+    "src",
+    "README.md"
+  ]
+}
