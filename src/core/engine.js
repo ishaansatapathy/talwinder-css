@@ -1,252 +1,208 @@
-const CLASS_PREFIX = "tw-";
-const DEFAULT_BORDER = "1px solid #ccc";
-const DEFAULT_RADIUS = "8px";
+export function initEngine() {
+  const elements = document.querySelectorAll("[class]");
 
-function getUtilityValue(token) {
-  return token.split("-").slice(1).join("-");
-}
+  elements.forEach((el) => {
+    el.classList.forEach((cls) => {
+      if (!cls.startsWith("tw-")) return;
+      const actual = cls.slice(3);
 
-function getSpacingValue(rawValue) {
-  const numericValue = Number(rawValue);
+      if (actual.startsWith("bg-")) {
+        const val = actual.split("-")[1];
+        el.style.backgroundColor = val;
+      }
 
-  if (Number.isNaN(numericValue)) {
-    return null;
-  }
-
-  return `${numericValue * 4}px`;
-}
-
-function getPixelValue(rawValue) {
-  const numericValue = Number(rawValue);
-
-  if (Number.isNaN(numericValue)) {
-    return null;
-  }
-
-  return `${numericValue}px`;
-}
-
-function applySpacing(el, property, rawValue) {
-  const spacingValue = getSpacingValue(rawValue);
-
-  if (spacingValue) {
-    el.style[property] = spacingValue;
-  }
-}
-
-function utilityHandlers() {
-  return [
-    {
-      match: (token) => token.startsWith("bg-"),
-      apply: (el, token) => {
-        el.style.backgroundColor = getUtilityValue(token);
-      },
-    },
-    {
-      match: (token) => token === "text-bold",
-      apply: (el) => {
+      if (actual === "text-bold") {
         el.style.fontWeight = "bold";
-      },
-    },
-    {
-      match: (token) => token === "text-center",
-      apply: (el) => {
+      }
+
+      if (actual === "text-center") {
         el.style.textAlign = "center";
-      },
-    },
-    {
-      match: (token) => token.startsWith("text-"),
-      apply: (el, token) => {
-        const value = getUtilityValue(token);
-        const pixelValue = getPixelValue(value);
+      }
 
-        if (pixelValue) {
-          el.style.fontSize = pixelValue;
-          return;
+      if (actual.startsWith("text-")) {
+        const val = actual.split("-")[1];
+        if (isNaN(val)) {
+          el.style.color = val;
+        } else {
+          el.style.fontSize = `${val}px`;
         }
+      }
 
-        el.style.color = value;
-      },
-    },
-    {
-      match: (token) => token.startsWith("p-"),
-      apply: (el, token) => {
-        applySpacing(el, "padding", getUtilityValue(token));
-      },
-    },
-    {
-      match: (token) => token.startsWith("px-"),
-      apply: (el, token) => {
-        const spacingValue = getSpacingValue(getUtilityValue(token));
+      if (actual.startsWith("p-")) {
+        const val = actual.split("-")[1];
+        el.style.padding = `${val * 4}px`;
+      }
 
-        if (spacingValue) {
-          el.style.paddingLeft = spacingValue;
-          el.style.paddingRight = spacingValue;
-        }
-      },
-    },
-    {
-      match: (token) => token.startsWith("py-"),
-      apply: (el, token) => {
-        const spacingValue = getSpacingValue(getUtilityValue(token));
+      if (actual.startsWith("px-")) {
+        const val = actual.split("-")[1];
+        const space = `${val * 4}px`;
+        el.style.paddingLeft = space;
+        el.style.paddingRight = space;
+      }
 
-        if (spacingValue) {
-          el.style.paddingTop = spacingValue;
-          el.style.paddingBottom = spacingValue;
-        }
-      },
-    },
-    {
-      match: (token) => token.startsWith("m-"),
-      apply: (el, token) => {
-        applySpacing(el, "margin", getUtilityValue(token));
-      },
-    },
-    {
-      match: (token) => token.startsWith("w-"),
-      apply: (el, token) => {
-        const pixelValue = getPixelValue(getUtilityValue(token));
+      if (actual.startsWith("py-")) {
+        const val = actual.split("-")[1];
+        const space = `${val * 4}px`;
+        el.style.paddingTop = space;
+        el.style.paddingBottom = space;
+      }
 
-        if (pixelValue) {
-          el.style.width = pixelValue;
-        }
-      },
-    },
-    {
-      match: (token) => token.startsWith("h-"),
-      apply: (el, token) => {
-        const pixelValue = getPixelValue(getUtilityValue(token));
+      if (actual.startsWith("m-")) {
+        const val = actual.split("-")[1];
+        el.style.margin = `${val * 4}px`;
+      }
 
-        if (pixelValue) {
-          el.style.height = pixelValue;
-        }
-      },
-    },
-    {
-      match: (token) => token === "flex",
-      apply: (el) => {
+      if (actual.startsWith("w-")) {
+        const val = actual.split("-")[1];
+        el.style.width = `${val}px`;
+      }
+
+      if (actual.startsWith("h-")) {
+        const val = actual.split("-")[1];
+        el.style.height = `${val}px`;
+      }
+
+      if (actual === "flex") {
         el.style.display = "flex";
-      },
-    },
-    {
-      match: (token) => token === "flex-center",
-      apply: (el) => {
+      }
+
+      if (actual === "flex-center") {
         el.style.display = "flex";
         el.style.justifyContent = "center";
         el.style.alignItems = "center";
-      },
-    },
-    {
-      match: (token) => token === "border",
-      apply: (el) => {
-        el.style.border = DEFAULT_BORDER;
-      },
-    },
-    {
-      match: (token) => token === "rounded",
-      apply: (el) => {
-        el.style.borderRadius = DEFAULT_RADIUS;
-      },
-    },
-    {
-      match: (token) => token === "shadow-soft",
-      apply: (el) => {
-        el.style.boxShadow = "0 5px 10px rgba(0, 0, 0, 0.2)";
-      },
-    },
-    {
-      match: (token) => token === "shadow-hard",
-      apply: (el) => {
-        el.style.boxShadow = "0 15px 30px rgba(0, 0, 0, 0.5)";
-      },
-    },
-    {
-      match: (token) => token.startsWith("glow-"),
-      apply: (el, token) => {
-        el.style.boxShadow = `0 0 15px ${getUtilityValue(token)}`;
-      },
-    },
-    {
-      match: (token) => token.startsWith("shadow-"),
-      apply: (el, token) => {
-        const depth = Number(getUtilityValue(token));
+      }
 
-        if (!Number.isNaN(depth)) {
-          el.style.boxShadow = `0 ${depth}px ${depth * 2}px rgba(0, 0, 0, 0.3)`;
-        }
-      },
-    },
-    {
-      match: (token) => token === "card-3d",
-      apply: (el) => {
-        if (el.dataset.twCard3dBound === "true") {
-          return;
-        }
+      if (actual === "border") {
+        el.style.border = "1px solid #ccc";
+      }
 
-        el.dataset.twCard3dBound = "true";
+      if (actual === "rounded") {
+        el.style.borderRadius = "8px";
+      }
+
+      if (actual === "shadow-soft") {
+        el.style.boxShadow = "0 5px 10px rgba(0,0,0,0.2)";
+      }
+
+      if (actual === "shadow-hard") {
+        el.style.boxShadow = "0 15px 30px rgba(0,0,0,0.5)";
+      }
+
+      if (actual.startsWith("glow-")) {
+        const color = actual.split("-")[1];
+        el.style.boxShadow = `0 0 15px ${color}`;
+      }
+
+      if (actual.startsWith("shadow-")) {
+        const val = actual.split("-")[1];
+        if (!isNaN(val)) {
+          el.style.boxShadow = `0 ${val}px ${val * 2}px rgba(0,0,0,0.3)`;
+        }
+      }
+
+      if (actual === "card-3d") {
         el.style.transition = "transform 0.1s ease";
-
-        el.addEventListener("mousemove", (event) => {
+        el.addEventListener("mousemove", (e) => {
           const rect = el.getBoundingClientRect();
-          const x = event.clientX - rect.left;
-          const y = event.clientY - rect.top;
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
           const midX = rect.width / 2;
           const midY = rect.height / 2;
           const rotateY = (x - midX) / 10;
           const rotateX = (midY - y) / 10;
-
           el.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
         });
-
         el.addEventListener("mouseleave", () => {
           el.style.transform = "rotateX(0deg) rotateY(0deg)";
         });
-      },
-    },
-  ];
-}
-
-function applyUtilityToken(el, token) {
-  const handlers = utilityHandlers();
-  const matchingHandler = handlers.find((handler) => handler.match(token));
-
-  if (matchingHandler) {
-    matchingHandler.apply(el, token);
-  }
-}
-
-export function applyUtilities(root = document) {
-  if (typeof document === "undefined" || !root?.querySelectorAll) {
-    return;
-  }
-
-  const elements = root.querySelectorAll("[class]");
-
-  elements.forEach((el) => {
-    el.classList.forEach((className) => {
-      if (!className.startsWith(CLASS_PREFIX)) {
-        return;
       }
-
-      const token = className.slice(CLASS_PREFIX.length);
-      applyUtilityToken(el, token);
     });
   });
 }
 
-export function createComponent(render) {
-  return class extends HTMLElement {
-    connectedCallback() {
-      this.innerHTML = render();
-      applyUtilities(this);
-    }
-  };
-}
-
-export function initEngine() {
-  if (typeof window === "undefined" || typeof document === "undefined") {
-    return;
+if (typeof window !== "undefined" && typeof customElements !== "undefined") {
+  if (!customElements.get("login-card")) {
+    customElements.define("login-card", class extends HTMLElement {
+      connectedCallback() {
+        this.innerHTML = `
+          <div class="tw-p-4 tw-bg-blue tw-rounded tw-shadow-soft">
+            <h2 class="tw-text-white">Login</h2>
+            <input placeholder="Username" class="tw-m-2" />
+            <input placeholder="Password" type="password" class="tw-m-2" />
+            <button class="tw-m-2">Login</button>
+          </div>
+        `;
+      }
+    });
   }
 
-  applyUtilities(document);
+  if (!customElements.get("fancy-btn")) {
+    customElements.define("fancy-btn", class extends HTMLElement {
+      connectedCallback() {
+        this.innerHTML = `
+          <button class="tw-p-2 tw-bg-blue tw-text-white tw-rounded">
+            <slot></slot>
+          </button>
+        `;
+      }
+    });
+  }
+
+  if (!customElements.get("glass-card")) {
+    customElements.define("glass-card", class extends HTMLElement {
+      connectedCallback() {
+        this.innerHTML = `
+          <div class="glass tw-p-4 tw-rounded">
+            <slot></slot>
+          </div>
+        `;
+      }
+    });
+  }
+
+  if (!customElements.get("card-3d")) {
+    customElements.define("card-3d", class extends HTMLElement {
+      connectedCallback() {
+        this.innerHTML = `
+          <div class="tw-card-3d tw-p-4 tw-bg-blue tw-rounded tw-text-white">
+            <slot></slot>
+          </div>
+        `;
+      }
+    });
+  }
+
+  if (!customElements.get("gol-roti")) {
+    customElements.define("gol-roti", class extends HTMLElement {
+      connectedCallback() {
+        this.innerHTML = `
+          <div class="tw-w-100 tw-h-100 tw-rounded tw-bg-yellow"></div>
+        `;
+      }
+    });
+  }
+
+  if (!customElements.get("spin-loader")) {
+    customElements.define("spin-loader", class extends HTMLElement {
+      connectedCallback() {
+        this.innerHTML = `
+          <div style="
+            width:40px;
+            height:40px;
+            border:5px solid #ccc;
+            border-top:5px solid blue;
+            border-radius:50%;
+            animation: spin 1s linear infinite;
+          "></div>
+
+          <style>
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          </style>
+        `;
+      }
+    });
+  }
 }
