@@ -1,6 +1,6 @@
 {
   "name": "talwinder-css",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A lightweight Tailwind-like utility engine and component library written in vanilla JavaScript.",
   "main": "index.js",
   "type": "module",
