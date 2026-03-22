@@ -92,15 +92,3 @@ applyUtilities();
 - `spin-loader`
 
 ## Publish
-
-This package is ready to publish:
-
-```bash
-npm publish
-```
-
-Make sure you are logged into npm first:
-
-```bash
-npm login
-```
