@@ -90,5 +90,3 @@ applyUtilities();
 - `card-3d`
 - `gol-roti`
 - `spin-loader`
-
-## Publish
